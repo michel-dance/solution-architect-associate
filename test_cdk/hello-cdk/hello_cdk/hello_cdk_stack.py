@@ -1,5 +1,5 @@
 from aws_cdk import (
-    Stack
+    Stack, Duration
 )
 import aws_cdk.aws_s3 as s3
 import aws_cdk.aws_iam as iam
@@ -7,7 +7,6 @@ import aws_cdk.aws_cloudwatch as cloudwatch
 import aws_cdk.aws_sns as sns
 import aws_cdk.aws_sns_subscriptions as subscriptions
 import aws_cdk.aws_cloudwatch_actions as actions
-
 from constructs import Construct
 
 class HelloCdkStack(Stack):
@@ -24,7 +23,7 @@ class HelloCdkStack(Stack):
         role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess"))
 
         # create a metric named metric and assign it the USD metric for the aws account, so that whenever the metric value is above $20 we get an alarm
-        metric = cloudwatch.Metric(namespace="AWS/Billing", metric_name="EstimatedCharges", dimensions_map={"Currency": "USD"})
+        metric = cloudwatch.Metric(namespace="AWS/Billing", metric_name="EstimatedCharges", dimensions_map={"Currency": "USD"}, period=Duration.hours(6))
 
         # now create a variable name alarm and assign the metrics and threshold to it and set the alarm to trigger above $20 for 6 hours
         alarm = cloudwatch.Alarm(self, "alarm", metric=metric, threshold=20, evaluation_periods=1)
